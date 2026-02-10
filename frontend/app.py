@@ -312,7 +312,11 @@ def main():
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        # Input area at the top
+        # Welcome message at the top
+        if not st.session_state.messages:
+            st.info("👋 Welcome! Ask me anything about university policies, procedures, courses, or calendar.")
+        
+        # Input area below welcome
         st.markdown("### ✍️ Ask a Question")
         
         # Check for example question from sidebar
@@ -335,21 +339,19 @@ def main():
         with col_send:
             send_button = st.button("📤 Send", type="primary", use_container_width=True)
         
-        # Display chat history below input
-        st.markdown("---")
-        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-        
-        if not st.session_state.messages:
-            st.info("👋 Welcome! Ask me anything about university policies, procedures, courses, or calendar.")
-        
-        for message in st.session_state.messages:
-            display_chat_message(
-                message["role"],
-                message["content"],
-                message.get("sources")
-            )
-        
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Display chat history below input (only if there are messages)
+        if st.session_state.messages:
+            st.markdown("---")
+            st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+            
+            for message in st.session_state.messages:
+                display_chat_message(
+                    message["role"],
+                    message["content"],
+                    message.get("sources")
+                )
+            
+            st.markdown('</div>', unsafe_allow_html=True)
         
         # Process user input
         if send_button and user_input:
