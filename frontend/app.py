@@ -41,7 +41,8 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        padding: 1rem 0 0.5rem 0;
+        padding: 0.5rem 0 0.3rem 0;
+        margin-bottom: 0.5rem;
         font-size: 2.8rem;
         font-weight: 800;
         letter-spacing: -0.02em;
@@ -49,9 +50,9 @@ st.markdown("""
     
     /* Enhanced chat messages */
     .chat-message {
-        padding: 1.25rem 1.5rem;
+        padding: 1rem 1.25rem;
         border-radius: 1.2rem;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         font-size: 1.05rem;
         line-height: 1.7;
@@ -165,11 +166,11 @@ st.markdown("""
     
     /* Chat container */
     .chat-container {
-        padding: 1rem 0;
-        min-height: 200px;
+        padding: 0.5rem 0;
+        min-height: 150px;
         max-height: 500px;
         overflow-y: auto;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     
     /* Custom scrollbar */
@@ -193,16 +194,16 @@ st.markdown("""
     
     /* Remove extra padding */
     .main .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
         max-width: 1200px;
     }
     
     /* Enhanced headings */
     h3 {
         color: #1a202c;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
+        margin-top: 0.8rem;
+        margin-bottom: 0.6rem;
         font-weight: 700;
         font-size: 1.5rem;
     }
@@ -213,7 +214,8 @@ st.markdown("""
         background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
         border-left: 4px solid #667eea;
         border-radius: 0.8rem;
-        padding: 1.2rem;
+        padding: 1rem;
+        margin-bottom: 0.8rem;
         animation: fadeIn 0.5s ease-out;
     }
     
@@ -251,7 +253,7 @@ st.markdown("""
     
     /* Divider styling */
     hr {
-        margin: 1.5rem 0;
+        margin: 1rem 0;
         border: none;
         height: 1px;
         background: linear-gradient(to right, transparent, #cbd5e0, transparent);
