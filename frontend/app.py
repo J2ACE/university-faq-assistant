@@ -253,10 +253,20 @@ st.markdown("""
     
     /* Divider styling */
     hr {
-        margin: 1rem 0;
+        margin: 0.5rem 0;
         border: none;
         height: 1px;
         background: linear-gradient(to right, transparent, #cbd5e0, transparent);
+    }
+    
+    /* Remove gap after buttons */
+    .stButton {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Remove gap after columns */
+    .row-widget.stHorizontal {
+        margin-bottom: 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -476,8 +486,7 @@ def main():
         
         # Display chat history below input (only if there are messages)
         if st.session_state.messages:
-            st.markdown("---")
-            st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+            st.markdown('<div class="chat-container" style="margin-top: 0.5rem;">', unsafe_allow_html=True)
             
             for message in st.session_state.messages:
                 display_chat_message(
