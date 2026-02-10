@@ -10,6 +10,35 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Try to import streamlit for reading secrets (when deployed on Streamlit Cloud)
+try:
+    import streamlit as st
+    IN_STREAMLIT = True
+except ImportError:
+    IN_STREAMLIT = False
+
+def get_config(key: str, default: str = "") -> str:
+    """
+    Get configuration value from Streamlit secrets (if deployed) or environment variables
+    
+    Args:
+        key: Configuration key name
+        default: Default value if key not found
+    
+    Returns:
+        Configuration value
+    """
+    # First, try Streamlit secrets (for deployed apps)
+    if IN_STREAMLIT:
+        try:
+            if hasattr(st, 'secrets') and key in st.secrets:
+                return st.secrets[key]
+        except:
+            pass
+    
+    # Fallback to environment variables (for local development)
+    return os.getenv(key, default)
+
 # ============================================
 # PROJECT PATHS
 # ============================================
@@ -26,17 +55,17 @@ VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)
 # LLM CONFIGURATION
 # ============================================
 # Choose LLM provider: "openai" or "huggingface"
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")
+LLM_PROVIDER = get_config("LLM_PROVIDER", "openai")
 
 # OpenAI Configuration
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
-OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002")
+OPENAI_API_KEY = get_config("OPENAI_API_KEY", "")
+OPENAI_MODEL = get_config("OPENAI_MODEL", "gpt-3.5-turbo")
+OPENAI_EMBEDDING_MODEL = get_config("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002")
 
 # HuggingFace Configuration (fallback for free option)
-HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
-HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "gpt2")
-HUGGINGFACE_EMBEDDING_MODEL = os.getenv("HUGGINGFACE_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+HUGGINGFACE_API_KEY = get_config("HUGGINGFACE_API_KEY", "")
+HUGGINGFACE_MODEL = get_config("HUGGINGFACE_MODEL", "gpt2")
+HUGGINGFACE_EMBEDDING_MODEL = get_config("HUGGINGFACE_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 # ============================================
 # DOCUMENT PROCESSING CONFIGURATION
