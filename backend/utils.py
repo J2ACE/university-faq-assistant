@@ -128,32 +128,27 @@ def initialize_llm():
             else:
                 # Use local HuggingFace model without API
                 from langchain_community.llms import HuggingFacePipeline
-                from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+                from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
                 import torch
                 
                 print(f"Loading model: {llm_config['model']}")
                 
-                # Load model and tokenizer
+                # Load model and tokenizer for T5 (seq2seq model)
                 tokenizer = AutoTokenizer.from_pretrained(llm_config["model"])
-                model = AutoModelForCausalLM.from_pretrained(
+                model = AutoModelForSeq2SeqLM.from_pretrained(
                     llm_config["model"],
                     torch_dtype=torch.float32,
                     device_map="auto" if torch.cuda.is_available() else None
                 )
                 
-                # Add pad token if not present (for GPT-2)
-                if tokenizer.pad_token is None:
-                    tokenizer.pad_token = tokenizer.eos_token
-                
                 pipe = pipeline(
-                    "text-generation",
+                    "text2text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=100,  # Conservative limit for GPT-2
+                    max_length=256,  # Flan-T5 can handle longer outputs
                     temperature=0.7,
                     do_sample=True,
-                    truncation=True,
-                    pad_token_id=tokenizer.eos_token_id
+                    truncation=True
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)

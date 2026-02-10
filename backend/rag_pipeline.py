@@ -168,20 +168,22 @@ class RAGPipeline:
                     processed_sources.append(doc)
                     context_parts.append(content)
             
-            # Build context with strict length limit
+            # Build context with reasonable limit for Flan-T5
             context = "\n\n".join(context_parts)
-            context = context[:800]  # Hard limit to stay within token budget
+            context = context[:1500]  # Flan-T5 handles more context
             
-            # Create simplified prompt for GPT-2
-            prompt_text = f"""Context from university documents:
-{context}
+            # Create instruction-style prompt for Flan-T5
+            prompt_text = f"""Answer the question based on the context below.
+
+Context: {context}
 
 Question: {question}
-Answer:"""
+
+Provide a clear and concise answer:"""
             
             # Ensure total prompt length is manageable
-            if len(prompt_text) > 2000:  # Character limit as proxy for tokens
-                prompt_text = prompt_text[:2000]
+            if len(prompt_text) > 3000:  # Character limit as proxy for tokens
+                prompt_text = prompt_text[:3000]
             
             # Generate answer using LLM
             llm_response = self.llm.invoke(prompt_text)
