@@ -87,11 +87,16 @@ st.markdown("""
     }
     /* Chat container styling */
     .chat-container {
-        padding: 0;
-        min-height: 400px;
-        max-height: 600px;
+        padding: 1rem 0;
+        min-height: 200px;
+        max-height: 500px;
         overflow-y: auto;
         margin-bottom: 1rem;
+    }
+    /* Remove extra padding from main container */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
     /* Scrollbar styling */
     .chat-container::-webkit-scrollbar {
@@ -146,12 +151,9 @@ def initialize_rag_pipeline():
     try:
         # Check if vector store exists, if not, create it
         if not utils.check_vector_store_exists():
-            st.info("🔧 First time setup: Creating vector database from university documents...")
-            st.info("This may take 2-3 minutes. Please wait...")
             success, error = run_document_ingestion()
             if not success:
                 return None, f"Failed to create vector database: {error}"
-            st.success("✅ Vector database created successfully!")
         
         rag = RAGPipeline()
         rag.setup()
@@ -273,26 +275,35 @@ def main():
         st.session_state.messages = []
     
     if 'rag_pipeline' not in st.session_state:
+        # Show initialization in sidebar instead of main area
+        with st.sidebar:
+            st.info("🔧 Initializing AI system...")
+            
         # Initialize RAG pipeline
         with st.spinner("🔧 Initializing AI system... This may take a few minutes on first run."):
             rag_pipeline, error = initialize_rag_pipeline()
             
             if error:
                 st.error(f"❌ Failed to initialize: {error}")
-                st.info("""
-                **Troubleshooting:**
-                1. Check that PDF files exist in `data/pdfs/` directory
-                2. Verify your API keys in Streamlit Secrets (Settings → Secrets)
-                3. Make sure you have: OPENAI_API_KEY, LLM_PROVIDER, OPENAI_MODEL, OPENAI_EMBEDDING_MODEL
-                4. Check the app logs for detailed error messages
-                
-                **Manual initialization (if needed):**
-                Run: `python backend/ingest.py` locally, then commit the `data/vector_db/` folder
-                """)
+                with st.expander("🔧 Troubleshooting", expanded=False):
+                    st.info("""
+                    **Troubleshooting:**
+                    1. Check that PDF files exist in `data/pdfs/` directory
+                    2. Verify your API keys in Streamlit Secrets (Settings → Secrets)  
+                    3. Make sure you have: LLM_PROVIDER, HUGGINGFACE_MODEL, HUGGINGFACE_EMBEDDING_MODEL
+                    4. Check the app logs for detailed error messages
+                    
+                    **Manual initialization (if needed):**
+                    Run: `python backend/ingest.py` locally, then commit the `data/vector_db/` folder
+                    """)
                 st.stop()
             
             st.session_state.rag_pipeline = rag_pipeline
             st.session_state.chat_session = ChatSession(rag_pipeline)
+            
+        # Clear the sidebar message
+        with st.sidebar:
+            st.success("✅ AI system ready!")
     
     # Render sidebar
     sidebar()
@@ -301,23 +312,7 @@ def main():
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        # Display chat history with container styling
-        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-        
-        if not st.session_state.messages:
-            st.info("👋 Welcome! Ask me anything about university policies, procedures, courses, or calendar.")
-        
-        for message in st.session_state.messages:
-            display_chat_message(
-                message["role"],
-                message["content"],
-                message.get("sources")
-            )
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Input area with better spacing
-        st.markdown("---")
+        # Input area at the top
         st.markdown("### ✍️ Ask a Question")
         
         # Check for example question from sidebar
@@ -339,6 +334,22 @@ def main():
         col_send, col_clear = st.columns([1, 5])
         with col_send:
             send_button = st.button("📤 Send", type="primary", use_container_width=True)
+        
+        # Display chat history below input
+        st.markdown("---")
+        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+        
+        if not st.session_state.messages:
+            st.info("👋 Welcome! Ask me anything about university policies, procedures, courses, or calendar.")
+        
+        for message in st.session_state.messages:
+            display_chat_message(
+                message["role"],
+                message["content"],
+                message.get("sources")
+            )
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Process user input
         if send_button and user_input:
