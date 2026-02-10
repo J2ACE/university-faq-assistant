@@ -129,19 +129,31 @@ def initialize_llm():
                 # Use local HuggingFace model without API
                 from langchain_community.llms import HuggingFacePipeline
                 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+                import torch
                 
-                model = AutoModelForCausalLM.from_pretrained(llm_config["model"])
+                print(f"Loading model: {llm_config['model']}")
+                
+                # Load model and tokenizer
                 tokenizer = AutoTokenizer.from_pretrained(llm_config["model"])
+                model = AutoModelForCausalLM.from_pretrained(
+                    llm_config["model"],
+                    torch_dtype=torch.float32,
+                    device_map="auto" if torch.cuda.is_available() else None
+                )
+                
+                # Add pad token if not present (for GPT-2)
+                if tokenizer.pad_token is None:
+                    tokenizer.pad_token = tokenizer.eos_token
                 
                 pipe = pipeline(
                     "text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    max_new_tokens=150,  # Reduced to fit GPT-2 limit
-                    temperature=llm_config["temperature"],
+                    max_new_tokens=100,  # Conservative limit for GPT-2
+                    temperature=0.7,
                     do_sample=True,
                     truncation=True,
-                    max_length=512  # Ensure input doesn't exceed model limit
+                    pad_token_id=tokenizer.eos_token_id
                 )
                 
                 return HuggingFacePipeline(pipeline=pipe)
