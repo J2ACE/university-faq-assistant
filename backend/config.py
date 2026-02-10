@@ -55,17 +55,20 @@ VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)
 # LLM CONFIGURATION
 # ============================================
 # Choose LLM provider: "openai" or "huggingface"
-LLM_PROVIDER = get_config("LLM_PROVIDER", "openai")
+LLM_PROVIDER = get_config("LLM_PROVIDER", "huggingface")
 
-# OpenAI Configuration
+# OpenAI Configuration (optional, if user has OpenAI key)
 OPENAI_API_KEY = get_config("OPENAI_API_KEY", "")
 OPENAI_MODEL = get_config("OPENAI_MODEL", "gpt-3.5-turbo")
 OPENAI_EMBEDDING_MODEL = get_config("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002")
 
-# HuggingFace Configuration (fallback for free option)
+# HuggingFace Configuration (free, no API key needed)
 HUGGINGFACE_API_KEY = get_config("HUGGINGFACE_API_KEY", "")
-HUGGINGFACE_MODEL = get_config("HUGGINGFACE_MODEL", "gpt2")
+HUGGINGFACE_MODEL = get_config("HUGGINGFACE_MODEL", "google/flan-t5-base")
 HUGGINGFACE_EMBEDDING_MODEL = get_config("HUGGINGFACE_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+
+# ScaleDown.ai Configuration (for document compression feature)
+SCALEDOWN_API_KEY = get_config("SCALEDOWN_API_KEY", "")
 
 # ============================================
 # DOCUMENT PROCESSING CONFIGURATION
