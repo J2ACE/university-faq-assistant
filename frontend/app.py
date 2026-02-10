@@ -123,12 +123,36 @@ st.markdown("""
 
 
 @st.cache_resource
+def run_document_ingestion():
+    """
+    Run document ingestion to create vector database
+    This runs automatically on first launch if vector store doesn't exist
+    """
+    try:
+        from ingest import DocumentIngester
+        ingester = DocumentIngester()
+        ingester.ingest_documents()
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+
+@st.cache_resource
 def initialize_rag_pipeline():
     """
     Initialize and cache the RAG pipeline
     This runs only once and is cached for performance
     """
     try:
+        # Check if vector store exists, if not, create it
+        if not utils.check_vector_store_exists():
+            st.info("🔧 First time setup: Creating vector database from university documents...")
+            st.info("This may take 2-3 minutes. Please wait...")
+            success, error = run_document_ingestion()
+            if not success:
+                return None, f"Failed to create vector database: {error}"
+            st.success("✅ Vector database created successfully!")
+        
         rag = RAGPipeline()
         rag.setup()
         return rag, None
@@ -199,8 +223,8 @@ def sidebar():
             st.sidebar.metric("Document Chunks", stats['total_chunks'])
             st.sidebar.metric("Embedding Dimension", stats['embedding_dimension'])
     else:
-        st.sidebar.error("❌ No documents loaded")
-        st.sidebar.warning("Please run: `python backend/ingest.py`")
+        st.sidebar.info("⏳ Vector database will be created automatically on first run...")
+
     
     # PDF count
     pdf_count = utils.count_pdf_files()
@@ -250,17 +274,20 @@ def main():
     
     if 'rag_pipeline' not in st.session_state:
         # Initialize RAG pipeline
-        with st.spinner("🔧 Initializing AI system..."):
+        with st.spinner("🔧 Initializing AI system... This may take a few minutes on first run."):
             rag_pipeline, error = initialize_rag_pipeline()
             
             if error:
                 st.error(f"❌ Failed to initialize: {error}")
                 st.info("""
                 **Troubleshooting:**
-                1. Make sure you've run document ingestion: `python backend/ingest.py`
-                2. Check that PDF files exist in `data/pdfs/` directory
-                3. Verify your API keys in `.env` file (if using OpenAI)
-                4. Check the console for detailed error messages
+                1. Check that PDF files exist in `data/pdfs/` directory
+                2. Verify your API keys in Streamlit Secrets (Settings → Secrets)
+                3. Make sure you have: OPENAI_API_KEY, LLM_PROVIDER, OPENAI_MODEL, OPENAI_EMBEDDING_MODEL
+                4. Check the app logs for detailed error messages
+                
+                **Manual initialization (if needed):**
+                Run: `python backend/ingest.py` locally, then commit the `data/vector_db/` folder
                 """)
                 st.stop()
             
