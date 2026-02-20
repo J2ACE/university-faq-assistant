@@ -64,11 +64,11 @@ OPENAI_EMBEDDING_MODEL = get_config("OPENAI_EMBEDDING_MODEL", "text-embedding-ad
 
 # HuggingFace Configuration (free, no API key needed)
 HUGGINGFACE_API_KEY = get_config("HUGGINGFACE_API_KEY", "")
-HUGGINGFACE_MODEL = get_config("HUGGINGFACE_MODEL", "google/flan-t5-base")  # QA-optimized model
+HUGGINGFACE_MODEL = get_config("HUGGINGFACE_MODEL", "microsoft/DialoGPT-medium")  # Text generation model
 HUGGINGFACE_EMBEDDING_MODEL = get_config("HUGGINGFACE_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 # ScaleDown.ai Configuration (for document compression feature)
-SCALEDOWN_API_KEY = get_config("SCALEDOWN_API_KEY", "")
+SCALEDOWN_API_KEY = get_config("SCALEDOWN_API_KEY", "dCwhMCtyGn7PdlnYGoaTI9X0oITDMDyO9vMZMgJ8")
 
 # ============================================
 # DOCUMENT PROCESSING CONFIGURATION

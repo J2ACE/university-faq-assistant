@@ -244,6 +244,99 @@ st.markdown("""
         background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%);
     }
     
+    /* Sidebar text styling for visibility */
+    .css-1d391kg .css-10trblm,
+    [data-testid="stSidebar"] .css-10trblm,
+    .css-1d391kg .stMarkdown,
+    [data-testid="stSidebar"] .stMarkdown,
+    .css-1d391kg .stText,
+    [data-testid="stSidebar"] .stText,
+    .css-1d391kg .element-container,
+    [data-testid="stSidebar"] .element-container,
+    .css-1d391kg p,
+    [data-testid="stSidebar"] p,
+    .css-1d391kg h1,
+    [data-testid="stSidebar"] h1,
+    .css-1d391kg h2,
+    [data-testid="stSidebar"] h2,
+    .css-1d391kg h3,
+    [data-testid="stSidebar"] h3,
+    .css-1d391kg div,
+    [data-testid="stSidebar"] div {
+        color: #2d3748 !important;
+    }
+    
+    /* Sidebar titles and headings */
+    .css-1d391kg .css-10trblm h1,
+    [data-testid="stSidebar"] .css-10trblm h1,
+    .css-1d391kg .css-10trblm h2,
+    [data-testid="stSidebar"] .css-10trblm h2,
+    .css-1d391kg .css-10trblm h3,
+    [data-testid="stSidebar"] .css-10trblm h3 {
+        color: #1a365d !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem !important;
+        margin-top: 1rem !important;
+    }
+    
+    /* Specific targeting for text elements in sidebar */
+    [data-testid="stSidebar"] .stText,
+    [data-testid="stSidebar"] .stText p,
+    [data-testid="stSidebar"] .stText div,
+    .css-1d391kg .stText,
+    .css-1d391kg .stText p,
+    .css-1d391kg .stText div {
+        color: #2d3748 !important;
+        font-weight: 500 !important;
+        margin-bottom: 0.3rem !important;
+        margin-top: 0.2rem !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.2rem 0 !important;
+    }
+    
+    /* Remove any highlighting from sidebar text */
+    [data-testid="stSidebar"] [data-testid="stText"],
+    .css-1d391kg [data-testid="stText"] {
+        background-color: transparent !important;
+        background: transparent !important;
+        color: #4a5568 !important;
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Info boxes in sidebar */
+    .css-1d391kg .stInfo,
+    [data-testid="stSidebar"] .stInfo {
+        color: #2d3748 !important;
+        background: rgba(255, 255, 255, 0.8) !important;
+        border-left: 4px solid #667eea !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    /* Success boxes in sidebar */
+    .css-1d391kg .stSuccess,
+    [data-testid="stSidebar"] .stSuccess {
+        color: #22543d !important;
+        background: rgba(240, 253, 244, 0.9) !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    /* Reduce spacing between sidebar elements */
+    [data-testid="stSidebar"] .element-container,
+    .css-1d391kg .element-container {
+        margin-bottom: 0.4rem !important;
+    }
+    
+    /* Compact sidebar buttons */
+    [data-testid="stSidebar"] .stButton,
+    .css-1d391kg .stButton {
+        margin-bottom: 0.3rem !important;
+        margin-top: 0.2rem !important;
+    }
+    
     /* Metric styling */
     [data-testid="stMetricValue"] {
         font-size: 1.8rem;
@@ -372,7 +465,6 @@ def sidebar():
     else:
         st.sidebar.info("⏳ Vector database will be created automatically on first run...")
 
-    
     # PDF count
     pdf_count = utils.count_pdf_files()
     st.sidebar.metric("PDF Documents", pdf_count)
@@ -465,24 +557,26 @@ def main():
         st.markdown("### ✍️ Ask a Question")
         
         # Check for example question from sidebar
+        example_question_clicked = False
         if 'example_question' in st.session_state:
-            question = st.session_state.example_question
+            user_input = st.session_state.example_question
             del st.session_state.example_question
+            example_question_clicked = True
         else:
-            question = None
+            # Chat input with improved styling
+            user_input = st.text_input(
+                "Type your question here:",
+                placeholder="e.g., What are the admission requirements?",
+                key="user_input",
+                label_visibility="visible"
+            )
         
-        # Chat input with improved styling
-        user_input = st.text_input(
-            "Type your question here:",
-            value=question or "",
-            placeholder="e.g., What are the admission requirements?",
-            key="user_input",
-            label_visibility="visible"
-        )
-        
-        col_send, col_clear = st.columns([1, 5])
-        with col_send:
-            send_button = st.button("📤 Send", type="primary", use_container_width=True)
+        if not example_question_clicked:
+            col_send, col_clear = st.columns([1, 5])
+            with col_send:
+                send_button = st.button("📤 Send", type="primary", use_container_width=True)
+        else:
+            send_button = True  # Auto-submit when example question is clicked
         
         # Display chat history below input (only if there are messages)
         if st.session_state.messages:
